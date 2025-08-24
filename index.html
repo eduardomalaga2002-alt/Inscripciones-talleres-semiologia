@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscripción a Talleres de Semiología – Centro de Simulación</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --primary: #0a66c2;
+      --primary-600: #0956a6;
+      --muted: #6b7280;
+      --ok: #059669;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --radius: 16px;
+      --shadow: 0 10px 25px rgba(10, 102, 194, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg); color: #111827;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: white; padding: 28px 16px; text-align: center;
+      box-shadow: var(--shadow);
+    }
+    header h1 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 2rem); }
+    header p { margin: 6px 0 0; opacity: .95; }
+
+    .wrap { max-width: 1100px; margin: 28px auto; padding: 0 16px; }
+
+    .grid { display: grid; gap: 18px; grid-template-columns: 1fr; }
+    @media (min-width: 980px) { .grid { grid-template-columns: 1.2fr .8fr; } }
+
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .card h2 { margin: 0 0 12px; font-size: 1.1rem; }
+    .muted { color: var(--muted); }
+
+    label { font-weight: 600; font-size: .95rem; display:block; margin: 10px 0 6px; }
+    input, select, button, textarea {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; font: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: 2px solid #bfdbfe; border-color:#93c5fd; }
+    button { background: var(--primary); color: #fff; border: none; cursor: pointer; font-weight: 700; }
+    button:hover { background: var(--primary-600); }
+    .btn-row { display:flex; gap:10px; flex-wrap: wrap; }
+    .btn-secondary { background:#111827; }
+    .btn-ghost { background:#fff; color:#111827; border:1px solid #e5e7eb; }
+
+    .inline { display:flex; gap:12px; }
+    .inline > * { flex:1; }
+
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:.8rem; }
+    .pill.ok { background:#ecfdf5; color: var(--ok); border:1px solid #a7f3d0; }
+    .pill.warn { background:#fffbeb; color: var(--warn); border:1px solid #fcd34d; }
+    .pill.danger { background:#fef2f2; color: var(--danger); border:1px solid #fecaca; }
+
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align:left; }
+    th { background:#f3f4f6; font-size:.9rem; }
+    tr:hover td { background:#fafafa; }
+
+    .caps { text-transform: uppercase; letter-spacing:.03em; font-size:.75rem; color:var(--muted); }
+    .small { font-size:.85rem; color:var(--muted); }
+    .success { color: var(--ok); font-weight:700; }
+    .error { color: var(--danger); font-weight:700; }
+
+    footer { text-align:center; padding: 24px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Inscripción a Talleres de Semiología</h1>
+    <p>Centro de Simulación · Del 10 al 18 de septiembre de 2025 · Cupos por taller y horario: 30</p>
+  </header>
+
+  <div class="wrap grid">
+    <!-- INSCRIPCIÓN -->
+    <section class="card">
+      <h2>Formulario de inscripción</h2>
+      <p class="small">Elige fecha y horario. Los cupos se contabilizan por <strong>taller (fecha + horario)</strong>.</p>
+
+      <form id="signupForm">
+        <div class="inline">
+          <div>
+            <label for="date">Fecha</label>
+            <select id="date" required></select>
+          </div>
+          <div>
+            <label for="slot">Horario</label>
+            <select id="slot" required>
+              <option value="14-16">14:00 – 16:00</option>
+              <option value="16-18">16:00 – 18:00</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="topic">Tema (taller)</label>
+        <select id="topic" required></select>
+
+        <div class="inline">
+          <div>
+            <label for="name">Nombre y Apellidos</label>
+            <input id="name" type="text" required placeholder="Nombre completo" />
+          </div>
+          <div>
+            <label for="email">Correo institucional</label>
+            <input id="email" type="email" required placeholder="tucorreo@unsa.edu.pe" />
+          </div>
+        </div>
+
+        <div class="inline">
+          <div>
+            <label for="dni">DNI</label>
+            <input id="dni" type="text" required placeholder="DNI" />
+          </div>
+          <div>
+            <label for="obs">Observaciones (opcional)</label>
+            <input id="obs" type="text" placeholder="Necesidades específicas, etc." />
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:12px;">
+          <button type="submit">Inscribirme</button>
+          <button class="btn-ghost" type="button" id="checkMyRegs">Ver mis inscripciones</button>
+        </div>
+        <p id="statusMsg" class="small" style="margin-top:8px;"></p>
+      </form>
+    </section>
+
+    <!-- CUPOS -->
+    <aside class="card">
+      <h2>Cupos por fecha y horario</h2>
+      <p class="small">Cupo máximo: 30 por cada bloque horario.</p>
+      <table id="capacityTable">
+        <thead>
+          <tr><th>Fecha</th><th>14:00–16:00</th><th>16:00–18:00</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </aside>
+
+    <!-- MIS INSCRIPCIONES -->
+    <section class="card" style="grid-column: 1 / -1;">
+      <h2>Mis inscripciones</h2>
+      <p class="small">Ingresa tu correo para ver y, si necesario, <strong>anular</strong> una inscripción (libera el cupo).</p>
+      <div class="inline">
+        <input id="myEmail" type="email" placeholder="tucorreo@unsa.edu.pe" />
+        <button id="loadMyRegs" class="btn-secondary">Buscar</button>
+      </div>
+      <div id="myRegsWrap" style="margin-top:12px;">
+        <table id="myRegsTable" style="display:none;">
+          <thead>
+            <tr><th>Fecha</th><th>Horario</th><th>Tema</th><th class="caps">Acción</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p id="noRegs" class="small muted" style="display:none;">No se encontraron inscripciones para este correo.</p>
+      </div>
+    </section>
+
+    <!-- ADMIN LIGERO -->
+    <section class="card" style="grid-column: 1 / -1;">
+      <h2>Listado general (descarga rápida)</h2>
+      <div class="btn-row">
+        <button id="exportCsv" class="btn-ghost">Exportar CSV</button>
+        <button id="resetAll" class="btn-ghost" title="Borra inscripciones y cupos guardados en este navegador">Reset local</button>
+      </div>
+      <p class="small muted">Nota: Esta interfaz guarda datos en <strong>localStorage</strong> del navegador para demostración. Para uso institucional multiusuario se requiere backend (Google Sheets / base de datos).</p>
+      <div style="overflow:auto; margin-top:10px;">
+        <table id="allRegsTable">
+          <thead>
+            <tr><th>Fecha</th><th>Horario</th><th>Tema</th><th>Nombre</th><th>Correo</th><th>DNI</th><th>Obs</th><th>Creado</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    © 2025 Semiología – Centro de Simulación | Límite 30 por taller y horario | Demostración sin servidor
+  </footer>
+
+  <script>
+    // ==== Configuración del evento
+    const MAX = 30;
+    // Rango de fechas: 10–18 septiembre 2025 (incluidos)
+    const dates = [10,11,12,13,14,15,16,17,18].map(d => new Date(2025, 8, d)); // Mes 8 = septiembre (0-index)
+
+    // Temario sugerido (puedes editar)
+    const topics = [
+      'Inducción, seguridad y entrevista clínica',
+      'Signos vitales y examen general',
+      'Cabeza y cuello + ORL',
+      'Cardiovascular',
+      'Respiratorio',
+      'Abdomen',
+      'Neurológico',
+      'Musculoesquelético',
+      'Urogenital, mama y examen rectal',
+      'Pediatría y obstetricia (intro)'
+    ];
+
+    const slotLabels = {
+      '14-16': '14:00–16:00',
+      '16-18': '16:00–18:00'
+    };
+
+    // ==== Storage helpers
+    const K_REGS = 'semiologia_regs_v1'; // array de registros
+    const K_CAPS = 'semiologia_caps_v1'; // capacidades por taller (fecha+slot)
+
+    const readJSON = (k, fallback) => {
+      try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; }
+    };
+    const writeJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    const fmtDate = (d) => d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const keyFor = (isoDate, slot) => `${isoDate}::${slot}`;
+
+    // Inicializa estructura de capacidades si no existe
+    function ensureCaps() {
+      const caps = readJSON(K_CAPS, {});
+      let changed = false;
+      dates.forEach(d => {
+        const iso = d.toISOString().slice(0,10);
+        ['14-16','16-18'].forEach(slot => {
+          const k = keyFor(iso, slot);
+          if (!(k in caps)) { caps[k] = { total: MAX, used: 0 }; changed = true; }
+        });
+      });
+      if (changed) writeJSON(K_CAPS, caps);
+      return caps;
+    }
+
+    // Rellena selects
+    function fillSelectors() {
+      const selDate = document.getElementById('date');
+      const selTopic = document.getElementById('topic');
+      selDate.innerHTML = dates.map(d => {
+        const iso = d.toISOString().slice(0,10);
+        return `<option value="${iso}">${fmtDate(d)}</option>`;
+      }).join('');
+      selTopic.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    // Render tabla de capacidades
+    function renderCapacity() {
+      const caps = ensureCaps();
+      const tbody = document.querySelector('#capacityTable tbody');
+      tbody.innerHTML = '';
+      dates.forEach(d => {
+        const iso = d.toISOString().slice(0,10);
+        const k1 = keyFor(iso, '14-16');
+        const k2 = keyFor(iso, '16-18');
+        const r1 = caps[k1] || { total: MAX, used: 0 };
+        const r2 = caps[k2] || { total: MAX, used: 0 };
+        const rem1 = Math.max(0, r1.total - r1.used);
+        const rem2 = Math.max(0, r2.total - r2.used);
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td><strong>${fmtDate(d)}</strong></td>
+            <td>${rem1} / ${r1.total} ${badge(rem1)}</td>
+            <td>${rem2} / ${r2.total} ${badge(rem2)}</td>
+          </tr>`);
+      });
+    }
+
+    function badge(rem) {
+      let cls = 'ok', txt = 'Disponible';
+      if (rem <= 10) { cls = 'warn'; txt = 'Pocos cupos'; }
+      if (rem <= 0) { cls = 'danger'; txt = 'Lleno'; }
+      return `<span class="pill ${cls}">${txt}</span>`;
+    }
+
+    // Manejo de inscripciones
+    function addRegistration(reg) {
+      const regs = readJSON(K_REGS, []);
+      const caps = ensureCaps();
+      const k = keyFor(reg.date, reg.slot);
+      const cap = caps[k] || { total: MAX, used: 0 };
+
+      // Evitar duplicado por correo en el mismo taller
+      const dup = regs.find(r => r.date === reg.date && r.slot === reg.slot && r.email.toLowerCase() === reg.email.toLowerCase());
+      if (dup) return { ok:false, msg:'Ya estás inscrito en este taller y horario con ese correo.' };
+
+      // Validar cupo
+      if (cap.used >= cap.total) return { ok:false, msg:'No hay cupos disponibles en ese taller/horario.' };
+
+      regs.push(reg);
+      cap.used += 1;
+      caps[k] = cap;
+      writeJSON(K_REGS, regs);
+      writeJSON(K_CAPS, caps);
+      return { ok:true };
+    }
+
+    function removeRegistration(reg) {
+      let regs = readJSON(K_REGS, []);
+      const caps = ensureCaps();
+      const idx = regs.findIndex(r => r.date===reg.date && r.slot===reg.slot && r.email.toLowerCase()===reg.email.toLowerCase());
+      if (idx === -1) return { ok:false };
+      regs.splice(idx,1);
+      const k = keyFor(reg.date, reg.slot);
+      if (caps[k] && caps[k].used>0) caps[k].used -= 1;
+      writeJSON(K_REGS, regs);
+      writeJSON(K_CAPS, caps);
+      return { ok:true };
+    }
+
+    function renderAllRegs() {
+      const regs = readJSON(K_REGS, []);
+      const tbody = document.querySelector('#allRegsTable tbody');
+      tbody.innerHTML = regs.map(r => `
+        <tr>
+          <td>${fmtHumanDate(r.date)}</td>
+          <td>${slotLabels[r.slot]||r.slot}</td>
+          <td>${r.topic}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${escapeHtml(r.email)}</td>
+          <td>${escapeHtml(r.dni)}</td>
+          <td>${escapeHtml(r.obs||'')}</td>
+          <td>${new Date(r.createdAt).toLocaleString('es-PE')}</td>
+        </tr>
+      `).join('');
+    }
+
+    function fmtHumanDate(iso) {
+      const [y,m,d] = iso.split('-').map(Number);
+      return new Date(y, m-1, d).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+
+    function exportCSV() {
+      const regs = readJSON(K_REGS, []);
+      const rows = [[
+        'Fecha','Horario','Tema','Nombre','Correo','DNI','Observaciones','Creado'
+      ], ...regs.map(r => [
+        fmtHumanDate(r.date), slotLabels[r.slot]||r.slot, r.topic, r.name, r.email, r.dni, r.obs||'', new Date(r.createdAt).toLocaleString('es-PE')
+      ])];
+      const csv = rows.map(r => r.map(x => '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'inscripciones_semiologia_2025-09-10_a_18.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function loadMyRegs(email) {
+      const regs = readJSON(K_REGS, []);
+      const list = regs.filter(r => r.email.toLowerCase() === email.toLowerCase());
+      const tbl = document.getElementById('myRegsTable');
+      const tbody = tbl.querySelector('tbody');
+      const empty = document.getElementById('noRegs');
+      if (list.length === 0) {
+        tbl.style.display = 'none'; empty.style.display='block'; return;
+      }
+      empty.style.display='none'; tbl.style.display='table';
+      tbody.innerHTML = list.map(r => `
+        <tr>
+          <td>${fmtHumanDate(r.date)}</td>
+          <td>${slotLabels[r.slot]||r.slot}</td>
+          <td>${r.topic}</td>
+          <td><button data-date="${r.date}" data-slot="${r.slot}" data-email="${r.email}" class="btn-ghost">Anular</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // ==== Eventos
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reg = {
+        date: document.getElementById('date').value,
+        slot: document.getElementById('slot').value,
+        topic: document.getElementById('topic').value,
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        dni: document.getElementById('dni').value.trim(),
+        obs: document.getElementById('obs').value.trim(),
+        createdAt: Date.now()
+      };
+      const res = addRegistration(reg);
+      const status = document.getElementById('statusMsg');
+      if (res.ok) {
+        status.textContent = '✅ Inscripción registrada'; status.className = 'success';
+        (e.target).reset();
+        renderCapacity();
+        renderAllRegs();
+      } else {
+        status.textContent = '❌ ' + res.msg; status.className = 'error';
+      }
+    });
+
+    document.getElementById('exportCsv').addEventListener('click', exportCSV);
+
+    document.getElementById('resetAll').addEventListener('click', () => {
+      if (!confirm('Esto eliminará los datos guardados localmente en este navegador. ¿Continuar?')) return;
+      localStorage.removeItem(K_REGS);
+      localStorage.removeItem(K_CAPS);
+      ensureCaps();
+      renderCapacity();
+      renderAllRegs();
+      alert('Reiniciado.');
+    });
+
+    document.getElementById('checkMyRegs').addEventListener('click', () => {
+      document.getElementById('myEmail').focus();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+
+    document.getElementById('loadMyRegs').addEventListener('click', () => {
+      const email = document.getElementById('myEmail').value.trim();
+      if (!email) return alert('Ingresa tu correo.');
+      loadMyRegs(email);
+    });
+
+    document.getElementById('myRegsWrap').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-date]');
+      if (!btn) return;
+      const email = btn.getAttribute('data-email');
+      const date = btn.getAttribute('data-date');
+      const slot = btn.getAttribute('data-slot');
+      if (!confirm('¿Anular inscripción y liberar el cupo?')) return;
+      const res = removeRegistration({ email, date, slot });
+      if (res.ok) {
+        renderCapacity();
+        renderAllRegs();
+        const myEmail = document.getElementById('myEmail').value.trim();
+        if (myEmail) loadMyRegs(myEmail);
+      }
+    });
+
+    // ==== Init
+    (function init(){
+      ensureCaps();
+      fillSelectors();
+      renderCapacity();
+      renderAllRegs();
+    })();
+  </script>
+</body>
+</html>
