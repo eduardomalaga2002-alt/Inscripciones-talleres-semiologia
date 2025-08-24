@@ -189,79 +189,58 @@
   </footer>
 
   <script>
-    // ==== Configuración del evento
-    const MAX = 30;
-    // Rango de fechas: 10–18 septiembre 2025 (incluidos)
-    const dates = [10,11,12,13,14,15,16,17,18].map(d => new Date(2025, 8, d)); // Mes 8 = septiembre (0-index)
+  // ==== CONFIG ====
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyomjVXZBHym1ppvw7t9y4T_IdrzFhwqIh0TXmCSpR9cuuOMeCahsjmuGfmFceCp0kN/exec"; 
 
-    // Temario sugerido (puedes editar)
-    const topics = [
-      'Inducción, seguridad y entrevista clínica',
-      'Signos vitales y examen general',
-      'Cabeza y cuello + ORL',
-      'Cardiovascular',
-      'Respiratorio',
-      'Abdomen',
-      'Neurológico',
-      'Musculoesquelético',
-      'Urogenital, mama y examen rectal',
-      'Pediatría y obstetricia (intro)'
-    ];
+  // Rango de fechas: 10–18 septiembre 2025 (incluidos)
+  const dates = [10,11,12,13,14,15,16,17,18].map(d => new Date(2025, 8, d));
 
-    const slotLabels = {
-      '14-16': '14:00–16:00',
-      '16-18': '16:00–18:00'
-    };
+  // Temario sugerido
+  const topics = [
+    'Inducción, seguridad y entrevista clínica',
+    'Signos vitales y examen general',
+    'Cabeza y cuello + ORL',
+    'Cardiovascular',
+    'Respiratorio',
+    'Abdomen',
+    'Neurológico',
+    'Musculoesquelético',
+    'Urogenital, mama y examen rectal',
+    'Pediatría y obstetricia (intro)'
+  ];
 
-    // ==== Storage helpers
-    const K_REGS = 'semiologia_regs_v1'; // array de registros
-    const K_CAPS = 'semiologia_caps_v1'; // capacidades por taller (fecha+slot)
+  const slotLabels = { '14-16': '14:00–16:00', '16-18': '16:00–18:00' };
 
-    const readJSON = (k, fallback) => {
-      try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; }
-    };
-    const writeJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const fmtDate = (d) => d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const fmtHumanDate = (iso) => {
+    const [y,m,d] = iso.split('-').map(Number);
+    return new Date(y, m-1, d).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  };
 
-    const fmtDate = (d) => d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
-    const keyFor = (isoDate, slot) => `${isoDate}::${slot}`;
+  // ==== Rellena selects
+  function fillSelectors() {
+    const selDate = document.getElementById('date');
+    const selTopic = document.getElementById('topic');
+    selDate.innerHTML = dates.map(d => {
+      const iso = d.toISOString().slice(0,10);
+      return `<option value="${iso}">${fmtDate(d)}</option>`;
+    }).join('');
+    selTopic.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
+  }
 
-    // Inicializa estructura de capacidades si no existe
-    function ensureCaps() {
-      const caps = readJSON(K_CAPS, {});
-      let changed = false;
-      dates.forEach(d => {
-        const iso = d.toISOString().slice(0,10);
-        ['14-16','16-18'].forEach(slot => {
-          const k = keyFor(iso, slot);
-          if (!(k in caps)) { caps[k] = { total: MAX, used: 0 }; changed = true; }
-        });
-      });
-      if (changed) writeJSON(K_CAPS, caps);
-      return caps;
-    }
+  // ==== Render capacidad (consulta al backend)
+  async function renderCapacity() {
+    const tbody = document.querySelector('#capacityTable tbody');
+    tbody.innerHTML = '<tr><td colspan="3">Cargando...</td></tr>';
 
-    // Rellena selects
-    function fillSelectors() {
-      const selDate = document.getElementById('date');
-      const selTopic = document.getElementById('topic');
-      selDate.innerHTML = dates.map(d => {
-        const iso = d.toISOString().slice(0,10);
-        return `<option value="${iso}">${fmtDate(d)}</option>`;
-      }).join('');
-      selTopic.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
-    }
-
-    // Render tabla de capacidades
-    function renderCapacity() {
-      const caps = ensureCaps();
-      const tbody = document.querySelector('#capacityTable tbody');
+    try {
+      const res = await fetch(SCRIPT_URL+"?action=getCapacity");
+      const data = await res.json();
       tbody.innerHTML = '';
       dates.forEach(d => {
         const iso = d.toISOString().slice(0,10);
-        const k1 = keyFor(iso, '14-16');
-        const k2 = keyFor(iso, '16-18');
-        const r1 = caps[k1] || { total: MAX, used: 0 };
-        const r2 = caps[k2] || { total: MAX, used: 0 };
+        const r1 = data[`${iso}::14-16`] || { total: MAX, used: 0 };
+        const r2 = data[`${iso}::16-18`] || { total: MAX, used: 0 };
         const rem1 = Math.max(0, r1.total - r1.used);
         const rem2 = Math.max(0, r2.total - r2.used);
         tbody.insertAdjacentHTML('beforeend', `
@@ -271,180 +250,105 @@
             <td>${rem2} / ${r2.total} ${badge(rem2)}</td>
           </tr>`);
       });
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="3">Error cargando cupos</td></tr>';
     }
+  }
 
-    function badge(rem) {
-      let cls = 'ok', txt = 'Disponible';
-      if (rem <= 10) { cls = 'warn'; txt = 'Pocos cupos'; }
-      if (rem <= 0) { cls = 'danger'; txt = 'Lleno'; }
-      return `<span class="pill ${cls}">${txt}</span>`;
-    }
+  function badge(rem) {
+    let cls = 'ok', txt = 'Disponible';
+    if (rem <= 10) { cls = 'warn'; txt = 'Pocos cupos'; }
+    if (rem <= 0) { cls = 'danger'; txt = 'Lleno'; }
+    return `<span class="pill ${cls}">${txt}</span>`;
+  }
 
-    // Manejo de inscripciones
-    function addRegistration(reg) {
-      const regs = readJSON(K_REGS, []);
-      const caps = ensureCaps();
-      const k = keyFor(reg.date, reg.slot);
-      const cap = caps[k] || { total: MAX, used: 0 };
+  // ==== Inscripción
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const reg = {
+      date: document.getElementById('date').value,
+      slot: document.getElementById('slot').value,
+      topic: document.getElementById('topic').value,
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      dni: document.getElementById('dni').value.trim(),
+      obs: document.getElementById('obs').value.trim()
+    };
+    const status = document.getElementById('statusMsg');
+    status.textContent = 'Enviando...';
 
-      // Evitar duplicado por correo en el mismo taller
-      const dup = regs.find(r => r.date === reg.date && r.slot === reg.slot && r.email.toLowerCase() === reg.email.toLowerCase());
-      if (dup) return { ok:false, msg:'Ya estás inscrito en este taller y horario con ese correo.' };
-
-      // Validar cupo
-      if (cap.used >= cap.total) return { ok:false, msg:'No hay cupos disponibles en ese taller/horario.' };
-
-      regs.push(reg);
-      cap.used += 1;
-      caps[k] = cap;
-      writeJSON(K_REGS, regs);
-      writeJSON(K_CAPS, caps);
-      return { ok:true };
-    }
-
-    function removeRegistration(reg) {
-      let regs = readJSON(K_REGS, []);
-      const caps = ensureCaps();
-      const idx = regs.findIndex(r => r.date===reg.date && r.slot===reg.slot && r.email.toLowerCase()===reg.email.toLowerCase());
-      if (idx === -1) return { ok:false };
-      regs.splice(idx,1);
-      const k = keyFor(reg.date, reg.slot);
-      if (caps[k] && caps[k].used>0) caps[k].used -= 1;
-      writeJSON(K_REGS, regs);
-      writeJSON(K_CAPS, caps);
-      return { ok:true };
-    }
-
-    function renderAllRegs() {
-      const regs = readJSON(K_REGS, []);
-      const tbody = document.querySelector('#allRegsTable tbody');
-      tbody.innerHTML = regs.map(r => `
-        <tr>
-          <td>${fmtHumanDate(r.date)}</td>
-          <td>${slotLabels[r.slot]||r.slot}</td>
-          <td>${r.topic}</td>
-          <td>${escapeHtml(r.name)}</td>
-          <td>${escapeHtml(r.email)}</td>
-          <td>${escapeHtml(r.dni)}</td>
-          <td>${escapeHtml(r.obs||'')}</td>
-          <td>${new Date(r.createdAt).toLocaleString('es-PE')}</td>
-        </tr>
-      `).join('');
-    }
-
-    function fmtHumanDate(iso) {
-      const [y,m,d] = iso.split('-').map(Number);
-      return new Date(y, m-1, d).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
-    }
-
-    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
-
-    function exportCSV() {
-      const regs = readJSON(K_REGS, []);
-      const rows = [[
-        'Fecha','Horario','Tema','Nombre','Correo','DNI','Observaciones','Creado'
-      ], ...regs.map(r => [
-        fmtHumanDate(r.date), slotLabels[r.slot]||r.slot, r.topic, r.name, r.email, r.dni, r.obs||'', new Date(r.createdAt).toLocaleString('es-PE')
-      ])];
-      const csv = rows.map(r => r.map(x => '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'inscripciones_semiologia_2025-09-10_a_18.csv'; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function loadMyRegs(email) {
-      const regs = readJSON(K_REGS, []);
-      const list = regs.filter(r => r.email.toLowerCase() === email.toLowerCase());
-      const tbl = document.getElementById('myRegsTable');
-      const tbody = tbl.querySelector('tbody');
-      const empty = document.getElementById('noRegs');
-      if (list.length === 0) {
-        tbl.style.display = 'none'; empty.style.display='block'; return;
-      }
-      empty.style.display='none'; tbl.style.display='table';
-      tbody.innerHTML = list.map(r => `
-        <tr>
-          <td>${fmtHumanDate(r.date)}</td>
-          <td>${slotLabels[r.slot]||r.slot}</td>
-          <td>${r.topic}</td>
-          <td><button data-date="${r.date}" data-slot="${r.slot}" data-email="${r.email}" class="btn-ghost">Anular</button></td>
-        </tr>
-      `).join('');
-    }
-
-    // ==== Eventos
-    document.getElementById('signupForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const reg = {
-        date: document.getElementById('date').value,
-        slot: document.getElementById('slot').value,
-        topic: document.getElementById('topic').value,
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        dni: document.getElementById('dni').value.trim(),
-        obs: document.getElementById('obs').value.trim(),
-        createdAt: Date.now()
-      };
-      const res = addRegistration(reg);
-      const status = document.getElementById('statusMsg');
-      if (res.ok) {
-        status.textContent = '✅ Inscripción registrada'; status.className = 'success';
-        (e.target).reset();
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action:"register", ...reg })
+      });
+      const out = await res.json();
+      if (out.success) {
+        status.textContent = "✅ Inscripción registrada";
+        status.className = 'success';
+        e.target.reset();
         renderCapacity();
-        renderAllRegs();
       } else {
-        status.textContent = '❌ ' + res.msg; status.className = 'error';
+        status.textContent = "❌ " + out.message;
+        status.className = 'error';
       }
-    });
+    } catch (err) {
+      status.textContent = "❌ Error de red";
+      status.className = 'error';
+    }
+  });
 
-    document.getElementById('exportCsv').addEventListener('click', exportCSV);
+  // ==== Mis inscripciones
+  document.getElementById('loadMyRegs').addEventListener('click', async () => {
+    const email = document.getElementById('myEmail').value.trim();
+    if (!email) return alert('Ingresa tu correo.');
 
-    document.getElementById('resetAll').addEventListener('click', () => {
-      if (!confirm('Esto eliminará los datos guardados localmente en este navegador. ¿Continuar?')) return;
-      localStorage.removeItem(K_REGS);
-      localStorage.removeItem(K_CAPS);
-      ensureCaps();
+    const tbl = document.getElementById('myRegsTable');
+    const tbody = tbl.querySelector('tbody');
+    const empty = document.getElementById('noRegs');
+    tbl.style.display = 'none'; empty.style.display='none';
+
+    try {
+      const res = await fetch(SCRIPT_URL+"?action=getByEmail&email="+encodeURIComponent(email));
+      const data = await res.json();
+      if (!data.length) { empty.style.display='block'; return; }
+      tbl.style.display='table';
+      tbody.innerHTML = data.map(r => `
+        <tr>
+          <td>${fmtHumanDate(r.date)}</td>
+          <td>${slotLabels[r.slot]}</td>
+          <td>${r.topic}</td>
+          <td><button data-id="${r.id}" class="btn-ghost">Anular</button></td>
+        </tr>
+      `).join('');
+    } catch {
+      empty.style.display='block'; empty.textContent='Error cargando inscripciones';
+    }
+  });
+
+  // Anular inscripción
+  document.getElementById('myRegsWrap').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+    if (!confirm('¿Anular inscripción y liberar el cupo?')) return;
+    try {
+      await fetch(SCRIPT_URL, {
+        method:"POST",
+        body: JSON.stringify({ action:"cancel", id:btn.dataset.id })
+      });
       renderCapacity();
-      renderAllRegs();
-      alert('Reiniciado.');
-    });
+      document.getElementById('loadMyRegs').click();
+    } catch {}
+  });
 
-    document.getElementById('checkMyRegs').addEventListener('click', () => {
-      document.getElementById('myEmail').focus();
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    });
+  // ==== Init
+  (function init(){
+    fillSelectors();
+    renderCapacity();
+  })();
+</script>
 
-    document.getElementById('loadMyRegs').addEventListener('click', () => {
-      const email = document.getElementById('myEmail').value.trim();
-      if (!email) return alert('Ingresa tu correo.');
-      loadMyRegs(email);
-    });
+  
 
-    document.getElementById('myRegsWrap').addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-date]');
-      if (!btn) return;
-      const email = btn.getAttribute('data-email');
-      const date = btn.getAttribute('data-date');
-      const slot = btn.getAttribute('data-slot');
-      if (!confirm('¿Anular inscripción y liberar el cupo?')) return;
-      const res = removeRegistration({ email, date, slot });
-      if (res.ok) {
-        renderCapacity();
-        renderAllRegs();
-        const myEmail = document.getElementById('myEmail').value.trim();
-        if (myEmail) loadMyRegs(myEmail);
-      }
-    });
-
-    // ==== Init
-    (function init(){
-      ensureCaps();
-      fillSelectors();
-      renderCapacity();
-      renderAllRegs();
-    })();
-  </script>
 </body>
 </html>
