@@ -3,352 +3,876 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inscripción a Talleres de Semiología – Centro de Simulación</title>
+  <title>Inscripción a Talleres de Semiología</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg: #f6f7fb;
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #06d6a0;
+      --warning: #ffd166;
+      --danger: #ef476f;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --bg: #f0f2f5;
       --card: #ffffff;
-      --primary: #0a66c2;
-      --primary-600: #0956a6;
-      --muted: #6b7280;
-      --ok: #059669;
-      --warn: #d97706;
-      --danger: #dc2626;
-      --radius: 16px;
-      --shadow: 0 10px 25px rgba(10, 102, 194, 0.08);
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg); color: #111827;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.6;
     }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
     header {
-      background: linear-gradient(135deg, var(--primary), #4f46e5);
-      color: white; padding: 28px 16px; text-align: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      border-radius: 0 0 var(--radius) var(--radius);
+      margin-bottom: 30px;
       box-shadow: var(--shadow);
     }
-    header h1 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 2rem); }
-    header p { margin: 6px 0 0; opacity: .95; }
 
-    .wrap { max-width: 1100px; margin: 28px auto; padding: 0 16px; }
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
 
-    .grid { display: grid; gap: 18px; grid-template-columns: 1fr; }
-    @media (min-width: 980px) { .grid { grid-template-columns: 1.2fr .8fr; } }
+    header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 5px 15px;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 25px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 992px) {
+      .grid {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
 
     .card {
-      background: var(--card); border-radius: var(--radius); padding: 18px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 25px;
       box-shadow: var(--shadow);
+      transition: var(--transition);
     }
-    .card h2 { margin: 0 0 12px; font-size: 1.1rem; }
-    .muted { color: var(--muted); }
 
-    label { font-weight: 600; font-size: .95rem; display:block; margin: 10px 0 6px; }
-    input, select, button, textarea {
-      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; font: inherit;
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-    input:focus, select:focus, textarea:focus { outline: 2px solid #bfdbfe; border-color:#93c5fd; }
-    button { background: var(--primary); color: #fff; border: none; cursor: pointer; font-weight: 700; }
-    button:hover { background: var(--primary-600); }
-    .btn-row { display:flex; gap:10px; flex-wrap: wrap; }
-    .btn-secondary { background:#111827; }
-    .btn-ghost { background:#fff; color:#111827; border:1px solid #e5e7eb; }
 
-    .inline { display:flex; gap:12px; }
-    .inline > * { flex:1; }
+    .card h2 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-    .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:.8rem; }
-    .pill.ok { background:#ecfdf5; color: var(--ok); border:1px solid #a7f3d0; }
-    .pill.warn { background:#fffbeb; color: var(--warn); border:1px solid #fcd34d; }
-    .pill.danger { background:#fef2f2; color: var(--danger); border:1px solid #fecaca; }
+    .card h2 i {
+      font-size: 1.3rem;
+    }
 
-    table { width:100%; border-collapse: collapse; }
-    th, td { padding: 10px 12px; border-bottom: 1px solid #eee; text-align:left; }
-    th { background:#f3f4f6; font-size:.9rem; }
-    tr:hover td { background:#fafafa; }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-    .caps { text-transform: uppercase; letter-spacing:.03em; font-size:.75rem; color:var(--muted); }
-    .small { font-size:.85rem; color:var(--muted); }
-    .success { color: var(--ok); font-weight:700; }
-    .error { color: var(--danger); font-weight:700; }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+    }
 
-    footer { text-align:center; padding: 24px; color: var(--muted); }
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .inline-fields {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 25px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #e0355f;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(67, 97, 238, 0.1);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .status-msg {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+    }
+
+    .success {
+      background: rgba(6, 214, 160, 0.15);
+      color: #059a71;
+      border: 1px solid rgba(6, 214, 160, 0.3);
+    }
+
+    .error {
+      background: rgba(239, 71, 111, 0.15);
+      color: #d32f55;
+      border: 1px solid rgba(239, 71, 111, 0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: var(--gray);
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .capacity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .capacity-high {
+      background: rgba(6, 214, 160, 0.15);
+      color: #059a71;
+    }
+
+    .capacity-medium {
+      background: rgba(255, 209, 102, 0.2);
+      color: #d4a747;
+    }
+
+    .capacity-low {
+      background: rgba(239, 71, 111, 0.15);
+      color: #d32f55;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .my-registrations {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+
+    .my-registrations h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+
+    .no-registrations {
+      text-align: center;
+      padding: 30px;
+      color: var(--gray);
+    }
+
+    .no-registrations i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 50px;
+      color: var(--gray);
+      font-size: 0.9rem;
+      border-top: 1px solid #eee;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-flex;
+      margin-left: 5px;
+    }
+
+    .tooltip i {
+      color: var(--gray);
+      cursor: help;
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.85rem;
+      font-weight: normal;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Inscripción a Talleres de Semiología</h1>
-    <p>Centro de Simulación · Del 10 al 18 de septiembre de 2025 · Cupos por taller y horario: 30</p>
+    <h1><i class="fas fa-microscope"></i> Inscripción a Talleres de Semiología</h1>
+    <p>Centro de Simulación · Del 10 al 18 de septiembre de 2025</p>
+    <div class="badge"><i class="fas fa-info-circle"></i> Cupo máximo: 30 personas por taller</div>
   </header>
 
-  <div class="wrap grid">
-    <!-- INSCRIPCIÓN -->
-    <section class="card">
-      <h2>Formulario de inscripción</h2>
-      <p class="small">Elige fecha y horario. Los cupos se contabilizan por <strong>taller (fecha + horario)</strong>.</p>
-
-      <form id="signupForm">
-        <div class="inline">
-          <div>
-            <label for="date">Fecha</label>
-            <select id="date" required></select>
+  <div class="container">
+    <div class="grid">
+      <!-- Formulario de inscripción -->
+      <section class="card">
+        <h2><i class="fas fa-edit"></i> Formulario de inscripción</h2>
+        <form id="signupForm">
+          <div class="inline-fields">
+            <div class="form-group">
+              <label for="date">Fecha <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">Selecciona la fecha en la que deseas participar</span></span></label>
+              <select id="date" required>
+                <option value="">Selecciona una fecha</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="slot">Horario <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">Elige el turno que prefieres</span></span></label>
+              <select id="slot" required>
+                <option value="">Selecciona un horario</option>
+                <option value="14-16">14:00 – 16:00</option>
+                <option value="16-18">16:00 – 18:00</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label for="slot">Horario</label>
-            <select id="slot" required>
-              <option value="14-16">14:00 – 16:00</option>
-              <option value="16-18">16:00 – 18:00</option>
+
+          <div class="form-group">
+            <label for="topic">Tema del taller <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">Elige el tema del taller que te interesa</span></span></label>
+            <select id="topic" required>
+              <option value="">Selecciona un tema</option>
             </select>
           </div>
-        </div>
 
-        <label for="topic">Tema (taller)</label>
-        <select id="topic" required></select>
-
-        <div class="inline">
-          <div>
-            <label for="name">Nombre y Apellidos</label>
-            <input id="name" type="text" required placeholder="Nombre completo" />
+          <div class="inline-fields">
+            <div class="form-group">
+              <label for="name">Nombre completo</label>
+              <input id="name" type="text" required placeholder="Tu nombre y apellidos">
+            </div>
+            <div class="form-group">
+              <label for="email">Correo institucional</label>
+              <input id="email" type="email" required placeholder="tucorreo@unsa.edu.pe">
+            </div>
           </div>
-          <div>
-            <label for="email">Correo institucional</label>
-            <input id="email" type="email" required placeholder="tucorreo@unsa.edu.pe" />
+
+          <div class="inline-fields">
+            <div class="form-group">
+              <label for="dni">DNI</label>
+              <input id="dni" type="text" required placeholder="Número de DNI" pattern="[0-9]{8}">
+            </div>
+            <div class="form-group">
+              <label for="phone">Teléfono (opcional)</label>
+              <input id="phone" type="tel" placeholder="Número de contacto">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="obs">Observaciones (opcional) <span class="tooltip"><i class="fas fa-question-circle"></i><span class="tooltip-text">Información adicional que debamos conocer</span></span></label>
+            <input id="obs" type="text" placeholder="Necesidades específicas, etc.">
+          </div>
+
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary btn-full"><i class="fas fa-paper-plane"></i> Inscribirme</button>
+          </div>
+          <div id="statusMsg" class="status-msg"></div>
+        </form>
+
+        <!-- Mis inscripciones -->
+        <div class="my-registrations">
+          <h3><i class="fas fa-user-check"></i> Mis inscripciones</h3>
+          <div class="form-group">
+            <label for="myEmail">Ingresa tu correo para ver o anular inscripciones</label>
+            <div class="inline-fields">
+              <input id="myEmail" type="email" placeholder="tucorreo@unsa.edu.pe">
+              <button id="loadMyRegs" class="btn btn-ghost"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+          </div>
+          <div id="myRegsWrap">
+            <div id="noRegs" class="no-registrations">
+              <i class="fas fa-inbox"></i>
+              <p>No se encontraron inscripciones</p>
+            </div>
+            <table id="myRegsTable" style="display: none;">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Horario</th>
+                  <th>Tema</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
+      </section>
 
-        <div class="inline">
-          <div>
-            <label for="dni">DNI</label>
-            <input id="dni" type="text" required placeholder="DNI" />
-          </div>
-          <div>
-            <label for="obs">Observaciones (opcional)</label>
-            <input id="obs" type="text" placeholder="Necesidades específicas, etc." />
-          </div>
-        </div>
-
-        <div class="btn-row" style="margin-top:12px;">
-          <button type="submit">Inscribirme</button>
-          <button class="btn-ghost" type="button" id="checkMyRegs">Ver mis inscripciones</button>
-        </div>
-        <p id="statusMsg" class="small" style="margin-top:8px;"></p>
-      </form>
-    </section>
-
-    <!-- CUPOS -->
-    <aside class="card">
-      <h2>Cupos por fecha y horario</h2>
-      <p class="small">Cupo máximo: 30 por cada bloque horario.</p>
-      <table id="capacityTable">
-        <thead>
-          <tr><th>Fecha</th><th>14:00–16:00</th><th>16:00–18:00</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </aside>
-
-    <!-- MIS INSCRIPCIONES -->
-    <section class="card" style="grid-column: 1 / -1;">
-      <h2>Mis inscripciones</h2>
-      <p class="small">Ingresa tu correo para ver y, si necesario, <strong>anular</strong> una inscripción (libera el cupo).</p>
-      <div class="inline">
-        <input id="myEmail" type="email" placeholder="tucorreo@unsa.edu.pe" />
-        <button id="loadMyRegs" class="btn-secondary">Buscar</button>
-      </div>
-      <div id="myRegsWrap" style="margin-top:12px;">
-        <table id="myRegsTable" style="display:none;">
+      <!-- Cupos por fecha y horario -->
+      <aside class="card">
+        <h2><i class="fas fa-chart-bar"></i> Cupos disponibles</h2>
+        <p>Consulta la disponibilidad por fecha y horario</p>
+        <table id="capacityTable">
           <thead>
-            <tr><th>Fecha</th><th>Horario</th><th>Tema</th><th class="caps">Acción</th></tr>
+            <tr>
+              <th>Fecha</th>
+              <th>14:00–16:00</th>
+              <th>16:00–18:00</th>
+            </tr>
           </thead>
           <tbody></tbody>
         </table>
-        <p id="noRegs" class="small muted" style="display:none;">No se encontraron inscripciones para este correo.</p>
-      </div>
-    </section>
-
-    <!-- ADMIN LIGERO -->
-    <section class="card" style="grid-column: 1 / -1;">
-      <h2>Listado general (descarga rápida)</h2>
-      <div class="btn-row">
-        <button id="exportCsv" class="btn-ghost">Exportar CSV</button>
-        <button id="resetAll" class="btn-ghost" title="Borra inscripciones y cupos guardados en este navegador">Reset local</button>
-      </div>
-      <p class="small muted">Nota: Esta interfaz guarda datos en <strong>localStorage</strong> del navegador para demostración. Para uso institucional multiusuario se requiere backend (Google Sheets / base de datos).</p>
-      <div style="overflow:auto; margin-top:10px;">
-        <table id="allRegsTable">
-          <thead>
-            <tr><th>Fecha</th><th>Horario</th><th>Tema</th><th>Nombre</th><th>Correo</th><th>DNI</th><th>Obs</th><th>Creado</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+      </aside>
+    </div>
   </div>
 
   <footer>
-    © 2025 Semiología – Centro de Simulación | Límite 30 por taller y horario | Demostración sin servidor
+    <p>© 2025 Semiología – Centro de Simulación | Universidad Nacional de San Agustín</p>
+    <p>Límite de 30 participantes por taller y horario</p>
   </footer>
 
   <script>
-  // ==== CONFIG ====
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyomjVXZBHym1ppvw7t9y4T_IdrzFhwqIh0TXmCSpR9cuuOMeCahsjmuGfmFceCp0kN/exec"; 
+    // ==== Configuración del evento
+    const MAX_CAPACITY = 30;
+    // Rango de fechas: 10–18 septiembre 2025 (incluidos)
+    const dates = [10,11,12,13,14,15,16,17,18].map(d => new Date(2025, 8, d));
 
-  // Rango de fechas: 10–18 septiembre 2025 (incluidos)
-  const dates = [10,11,12,13,14,15,16,17,18].map(d => new Date(2025, 8, d));
+    // Temario sugerido
+    const topics = [
+      'Inducción, seguridad y entrevista clínica',
+      'Signos vitales y examen general',
+      'Cabeza y cuello + ORL',
+      'Cardiovascular',
+      'Respiratorio',
+      'Abdomen',
+      'Neurológico',
+      'Musculoesquelético',
+      'Urogenital, mama y examen rectal',
+      'Pediatría y obstetricia (intro)'
+    ];
 
-  // Temario sugerido
-  const topics = [
-    'Inducción, seguridad y entrevista clínica',
-    'Signos vitales y examen general',
-    'Cabeza y cuello + ORL',
-    'Cardiovascular',
-    'Respiratorio',
-    'Abdomen',
-    'Neurológico',
-    'Musculoesquelético',
-    'Urogenital, mama y examen rectal',
-    'Pediatría y obstetricia (intro)'
-  ];
-
-  const slotLabels = { '14-16': '14:00–16:00', '16-18': '16:00–18:00' };
-
-  const fmtDate = (d) => d.toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
-  const fmtHumanDate = (iso) => {
-    const [y,m,d] = iso.split('-').map(Number);
-    return new Date(y, m-1, d).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
-  };
-
-  // ==== Rellena selects
-  function fillSelectors() {
-    const selDate = document.getElementById('date');
-    const selTopic = document.getElementById('topic');
-    selDate.innerHTML = dates.map(d => {
-      const iso = d.toISOString().slice(0,10);
-      return `<option value="${iso}">${fmtDate(d)}</option>`;
-    }).join('');
-    selTopic.innerHTML = topics.map(t => `<option value="${t}">${t}</option>`).join('');
-  }
-
-  // ==== Render capacidad (consulta al backend)
-  async function renderCapacity() {
-    const tbody = document.querySelector('#capacityTable tbody');
-    tbody.innerHTML = '<tr><td colspan="3">Cargando...</td></tr>';
-
-    try {
-      const res = await fetch(SCRIPT_URL+"?action=getCapacity");
-      const data = await res.json();
-      tbody.innerHTML = '';
-      dates.forEach(d => {
-        const iso = d.toISOString().slice(0,10);
-        const r1 = data[`${iso}::14-16`] || { total: MAX, used: 0 };
-        const r2 = data[`${iso}::16-18`] || { total: MAX, used: 0 };
-        const rem1 = Math.max(0, r1.total - r1.used);
-        const rem2 = Math.max(0, r2.total - r2.used);
-        tbody.insertAdjacentHTML('beforeend', `
-          <tr>
-            <td><strong>${fmtDate(d)}</strong></td>
-            <td>${rem1} / ${r1.total} ${badge(rem1)}</td>
-            <td>${rem2} / ${r2.total} ${badge(rem2)}</td>
-          </tr>`);
-      });
-    } catch (err) {
-      tbody.innerHTML = '<tr><td colspan="3">Error cargando cupos</td></tr>';
-    }
-  }
-
-  function badge(rem) {
-    let cls = 'ok', txt = 'Disponible';
-    if (rem <= 10) { cls = 'warn'; txt = 'Pocos cupos'; }
-    if (rem <= 0) { cls = 'danger'; txt = 'Lleno'; }
-    return `<span class="pill ${cls}">${txt}</span>`;
-  }
-
-  // ==== Inscripción
-  document.getElementById('signupForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const reg = {
-      date: document.getElementById('date').value,
-      slot: document.getElementById('slot').value,
-      topic: document.getElementById('topic').value,
-      name: document.getElementById('name').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      dni: document.getElementById('dni').value.trim(),
-      obs: document.getElementById('obs').value.trim()
+    const slotLabels = {
+      '14-16': '14:00–16:00',
+      '16-18': '16:00–18:00'
     };
-    const status = document.getElementById('statusMsg');
-    status.textContent = 'Enviando...';
 
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({ action:"register", ...reg })
-      });
-      const out = await res.json();
-      if (out.success) {
-        status.textContent = "✅ Inscripción registrada";
-        status.className = 'success';
-        e.target.reset();
-        renderCapacity();
-      } else {
-        status.textContent = "❌ " + out.message;
-        status.className = 'error';
+    // ==== Storage helpers
+    const STORAGE_KEYS = {
+      REGISTRATIONS: 'semiologia_registrations',
+      CAPACITIES: 'semiologia_capacities'
+    };
+
+    // Leer datos del localStorage
+    const readFromStorage = (key, fallback = []) => {
+      try {
+        return JSON.parse(localStorage.getItem(key)) || fallback;
+      } catch {
+        return fallback;
       }
-    } catch (err) {
-      status.textContent = "❌ Error de red";
-      status.className = 'error';
-    }
-  });
+    };
 
-  // ==== Mis inscripciones
-  document.getElementById('loadMyRegs').addEventListener('click', async () => {
-    const email = document.getElementById('myEmail').value.trim();
-    if (!email) return alert('Ingresa tu correo.');
+    // Guardar datos en el localStorage
+    const saveToStorage = (key, data) => {
+      localStorage.setItem(key, JSON.stringify(data));
+    };
 
-    const tbl = document.getElementById('myRegsTable');
-    const tbody = tbl.querySelector('tbody');
-    const empty = document.getElementById('noRegs');
-    tbl.style.display = 'none'; empty.style.display='none';
-
-    try {
-      const res = await fetch(SCRIPT_URL+"?action=getByEmail&email="+encodeURIComponent(email));
-      const data = await res.json();
-      if (!data.length) { empty.style.display='block'; return; }
-      tbl.style.display='table';
-      tbody.innerHTML = data.map(r => `
-        <tr>
-          <td>${fmtHumanDate(r.date)}</td>
-          <td>${slotLabels[r.slot]}</td>
-          <td>${r.topic}</td>
-          <td><button data-id="${r.id}" class="btn-ghost">Anular</button></td>
-        </tr>
-      `).join('');
-    } catch {
-      empty.style.display='block'; empty.textContent='Error cargando inscripciones';
-    }
-  });
-
-  // Anular inscripción
-  document.getElementById('myRegsWrap').addEventListener('click', async (e) => {
-    const btn = e.target.closest('button[data-id]');
-    if (!btn) return;
-    if (!confirm('¿Anular inscripción y liberar el cupo?')) return;
-    try {
-      await fetch(SCRIPT_URL, {
-        method:"POST",
-        body: JSON.stringify({ action:"cancel", id:btn.dataset.id })
+    // Formatear fecha
+    const formatDate = (date) => {
+      return date.toLocaleDateString('es-PE', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
       });
-      renderCapacity();
-      document.getElementById('loadMyRegs').click();
-    } catch {}
-  });
+    };
 
-  // ==== Init
-  (function init(){
-    fillSelectors();
-    renderCapacity();
-  })();
-</script>
+    // Generar clave única para un taller (fecha + horario)
+    const generateKey = (date, slot) => {
+      return `${date}::${slot}`;
+    };
 
-  
+    // Inicializar capacidades si no existen
+    const initializeCapacities = () => {
+      let capacities = readFromStorage(STORAGE_KEYS.CAPACITIES, {});
+      let hasChanges = false;
 
+      dates.forEach(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        ['14-16', '16-18'].forEach(slot => {
+          const key = generateKey(dateStr, slot);
+          if (!capacities[key]) {
+            capacities[key] = {
+              total: MAX_CAPACITY,
+              used: 0
+            };
+            hasChanges = true;
+          }
+        });
+      });
+
+      if (hasChanges) {
+        saveToStorage(STORAGE_KEYS.CAPACITIES, capacities);
+      }
+
+      return capacities;
+    };
+
+    // Llenar los selectores de fecha y tema
+    const populateSelectors = () => {
+      const dateSelect = document.getElementById('date');
+      const topicSelect = document.getElementById('topic');
+
+      // Llenar fechas
+      dateSelect.innerHTML = '<option value="">Selecciona una fecha</option>';
+      dates.forEach(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const option = document.createElement('option');
+        option.value = dateStr;
+        option.textContent = formatDate(date);
+        dateSelect.appendChild(option);
+      });
+
+      // Llenar temas
+      topicSelect.innerHTML = '<option value="">Selecciona un tema</option>';
+      topics.forEach(topic => {
+        const option = document.createElement('option');
+        option.value = topic;
+        option.textContent = topic;
+        topicSelect.appendChild(option);
+      });
+    };
+
+    // Mostrar mensaje de estado
+    const showStatusMessage = (message, type = 'success') => {
+      const statusElement = document.getElementById('statusMsg');
+      statusElement.textContent = message;
+      statusElement.className = `status-msg ${type}`;
+      
+      // Ocultar el mensaje después de 5 segundos
+      setTimeout(() => {
+        statusElement.textContent = '';
+        statusElement.className = 'status-msg';
+      }, 5000);
+    };
+
+    // Renderizar tabla de capacidades
+    const renderCapacityTable = () => {
+      const capacities = initializeCapacities();
+      const tableBody = document.querySelector('#capacityTable tbody');
+      tableBody.innerHTML = '';
+
+      dates.forEach(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const row = document.createElement('tr');
+        
+        // Celda de fecha
+        const dateCell = document.createElement('td');
+        dateCell.textContent = formatDate(date);
+        dateCell.style.fontWeight = '600';
+        row.appendChild(dateCell);
+
+        // Celdas de horarios
+        ['14-16', '16-18'].forEach(slot => {
+          const slotCell = document.createElement('td');
+          const key = generateKey(dateStr, slot);
+          const capacity = capacities[key] || { total: MAX_CAPACITY, used: 0 };
+          const available = capacity.total - capacity.used;
+          
+          let badgeClass = 'capacity-high';
+          if (available <= 10) badgeClass = 'capacity-medium';
+          if (available <= 5) badgeClass = 'capacity-low';
+          if (available === 0) badgeClass = 'capacity-low';
+          
+          slotCell.innerHTML = `
+            <div>${available} / ${capacity.total} disponibles</div>
+            <div class="capacity-badge ${badgeClass}">
+              <i class="fas ${available > 0 ? 'fa-check' : 'fa-times'}"></i>
+              ${available > 0 ? 'Disponible' : 'Lleno'}
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${(capacity.used / capacity.total) * 100}%"></div>
+            </div>
+          `;
+          
+          row.appendChild(slotCell);
+        });
+
+        tableBody.appendChild(row);
+      });
+    };
+
+    // Agregar una nueva inscripción
+    const addRegistration = (registrationData) => {
+      const registrations = readFromStorage(STORAGE_KEYS.REGISTRATIONS);
+      const capacities = initializeCapacities();
+      
+      const { date, slot, email } = registrationData;
+      const key = generateKey(date, slot);
+      
+      // Verificar si ya está inscrito en este taller
+      const alreadyRegistered = registrations.some(reg => 
+        reg.date === date && reg.slot === slot && reg.email.toLowerCase() === email.toLowerCase()
+      );
+      
+      if (alreadyRegistered) {
+        return {
+          success: false,
+          message: 'Ya estás inscrito en este taller y horario.'
+        };
+      }
+      
+      // Verificar disponibilidad
+      if (!capacities[key] || capacities[key].used >= capacities[key].total) {
+        return {
+          success: false,
+          message: 'No hay cupos disponibles en este taller/horario.'
+        };
+      }
+      
+      // Agregar la inscripción
+      registrations.push({
+        ...registrationData,
+        id: Date.now(), // ID único
+        createdAt: new Date().toISOString()
+      });
+      
+      // Actualizar capacidades
+      capacities[key].used += 1;
+      
+      // Guardar en localStorage
+      saveToStorage(STORAGE_KEYS.REGISTRATIONS, registrations);
+      saveToStorage(STORAGE_KEYS.CAPACITIES, capacities);
+      
+      return {
+        success: true,
+        message: '¡Inscripción realizada con éxito!'
+      };
+    };
+
+    // Eliminar una inscripción
+    const removeRegistration = (email, date, slot) => {
+      let registrations = readFromStorage(STORAGE_KEYS.REGISTRATIONS);
+      const capacities = initializeCapacities();
+      
+      // Buscar la inscripción
+      const index = registrations.findIndex(reg => 
+        reg.email.toLowerCase() === email.toLowerCase() && 
+        reg.date === date && 
+        reg.slot === slot
+      );
+      
+      if (index === -1) {
+        return {
+          success: false,
+          message: 'No se encontró la inscripción.'
+        };
+      }
+      
+      // Eliminar la inscripción
+      registrations.splice(index, 1);
+      
+      // Actualizar capacidades
+      const key = generateKey(date, slot);
+      if (capacities[key] && capacities[key].used > 0) {
+        capacities[key].used -= 1;
+      }
+      
+      // Guardar en localStorage
+      saveToStorage(STORAGE_KEYS.REGISTRATIONS, registrations);
+      saveToStorage(STORAGE_KEYS.CAPACITIES, capacities);
+      
+      return {
+        success: true,
+        message: 'Inscripción eliminada correctamente.'
+      };
+    };
+
+    // Cargar las inscripciones de un usuario
+    const loadUserRegistrations = (email) => {
+      const registrations = readFromStorage(STORAGE_KEYS.REGISTRATIONS);
+      const userRegistrations = registrations.filter(reg => 
+        reg.email.toLowerCase() === email.toLowerCase()
+      );
+      
+      const table = document.getElementById('myRegsTable');
+      const tableBody = table.querySelector('tbody');
+      const noRegsElement = document.getElementById('noRegs');
+      
+      if (userRegistrations.length === 0) {
+        table.style.display = 'none';
+        noRegsElement.style.display = 'block';
+        return;
+      }
+      
+      // Mostrar las inscripciones en la tabla
+      tableBody.innerHTML = '';
+      userRegistrations.forEach(reg => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+          <td>${formatDate(new Date(reg.date))}</td>
+          <td>${slotLabels[reg.slot] || reg.slot}</td>
+          <td>${reg.topic}</td>
+          <td>
+            <button class="btn btn-danger" 
+                    data-date="${reg.date}" 
+                    data-slot="${reg.slot}" 
+                    data-email="${reg.email}">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+      
+      noRegsElement.style.display = 'none';
+      table.style.display = 'table';
+    };
+
+    // Inicializar la aplicación
+    const initializeApp = () => {
+      // Inicializar capacidades
+      initializeCapacities();
+      
+      // Llenar selectores
+      populateSelectors();
+      
+      // Renderizar tabla de capacidades
+      renderCapacityTable();
+      
+      // Configurar event listeners
+      document.getElementById('signupForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const formData = {
+          date: document.getElementById('date').value,
+          slot: document.getElementById('slot').value,
+          topic: document.getElementById('topic').value,
+          name: document.getElementById('name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          dni: document.getElementById('dni').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          obs: document.getElementById('obs').value.trim()
+        };
+        
+        // Validar campos obligatorios
+        if (!formData.date || !formData.slot || !formData.topic || 
+            !formData.name || !formData.email || !formData.dni) {
+          showStatusMessage('Por favor, complete todos los campos obligatorios.', 'error');
+          return;
+        }
+        
+        // Validar formato de email
+        if (!formData.email.endsWith('@unsa.edu.pe')) {
+          showStatusMessage('Debe utilizar un correo institucional @unsa.edu.pe', 'error');
+          return;
+        }
+        
+        // Validar DNI
+        if (!/^\d{8}$/.test(formData.dni)) {
+          showStatusMessage('El DNI debe contener 8 dígitos numéricos.', 'error');
+          return;
+        }
+        
+        // Intentar agregar la inscripción
+        const result = addRegistration(formData);
+        
+        if (result.success) {
+          showStatusMessage(result.message, 'success');
+          // Resetear formulario
+          document.getElementById('signupForm').reset();
+          // Actualizar la tabla de capacidades
+          renderCapacityTable();
+        } else {
+          showStatusMessage(result.message, 'error');
+        }
+      });
+      
+      // Buscar inscripciones
+      document.getElementById('loadMyRegs').addEventListener('click', () => {
+        const email = document.getElementById('myEmail').value.trim();
+        
+        if (!email) {
+          showStatusMessage('Por favor, ingrese su correo electrónico.', 'error');
+          return;
+        }
+        
+        if (!email.endsWith('@unsa.edu.pe')) {
+          showStatusMessage('Debe utilizar un correo institucional @unsa.edu.pe', 'error');
+          return;
+        }
+        
+        loadUserRegistrations(email);
+      });
+      
+      // Eliminar inscripción (event delegation)
+      document.getElementById('myRegsWrap').addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-danger') || e.target.closest('.btn-danger')) {
+          const button = e.target.classList.contains('btn-danger') ? e.target : e.target.closest('.btn-danger');
+          const email = button.dataset.email;
+          const date = button.dataset.date;
+          const slot = button.dataset.slot;
+          
+          if (confirm('¿Está seguro de que desea eliminar esta inscripción?')) {
+            const result = removeRegistration(email, date, slot);
+            
+            if (result.success) {
+              showStatusMessage(result.message, 'success');
+              // Recargar las inscripciones del usuario
+              loadUserRegistrations(email);
+              // Actualizar la tabla de capacidades
+              renderCapacityTable();
+            } else {
+              showStatusMessage(result.message, 'error');
+            }
+          }
+        }
+      });
+    };
+
+    // Iniciar la aplicación cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
 </body>
 </html>
